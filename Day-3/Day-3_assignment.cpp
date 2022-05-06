@@ -59,7 +59,6 @@ int leader_group(int* groups)
 	return max;
 }
 
-
 int main()
 {
 	int N,M,i,j;
@@ -94,7 +93,6 @@ int main()
 	
 	count_group_members(N,M,members,visited,path,groups);
 	leadergroup = leader_group(groups);
-		
 	
 	cout<<"\nThe groups are: "<<endl;
 	for(i=0;groups[i];i++)
@@ -103,8 +101,7 @@ int main()
 	
 	cout<<"\nThe leader group is: ";
 	cout<<leadergroup<<endl;
-	
-	
+		
 	for(i=0;i<N;i++)
 	{
 		delete[] members[i];
