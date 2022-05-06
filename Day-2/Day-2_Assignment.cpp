@@ -8,7 +8,7 @@ class Bank
 		float interest;
 		string name;
 		Bank();
-		friend Bank& operator > (Bank &obj1, Bank &obj2);
+		friend Bank& operator < (Bank &obj1, Bank &obj2);
 		virtual void getName();
 		virtual void getEstablisedDate();
 		virtual void BankType();
@@ -328,9 +328,9 @@ class Indian_Bank : public Bank, public Loan
 class Broker : public Bank
 {	
 	public:
-		friend Bank& operator > (Bank &obj1 , Bank &obj2)
+		friend Bank& operator < (Bank &obj1 , Bank &obj2)
 		{
-			if(obj1.interest > obj2.interest)
+			if(obj1.interest < obj2.interest)
 				return obj1;
 			else
 				return obj2;
@@ -407,24 +407,23 @@ int main()
 		cin>>choice;
 		if(choice=='2')
 		{
-			cout<<"The bank that offers maximum interest(between HDFC and SBI) is : ";
-			ans =  (obj1 > obj2);
+			cout<<"The bank that offers minimum interest(between HDFC and SBI) is : ";
+			ans =  (obj1<obj2);
 			cout<<ans.name;
 		}
 		else if(choice=='3')
 		{
-			Bank temp;
-			temp = obj1>obj2;
-			cout<<"The bank that offers maximum interest(between HDFC, SBI and ICICI) is : ";
-			ans =  (temp > obj3);
+			ans = obj1<obj2;
+			cout<<"The bank that offers minimum interest(between HDFC, SBI and ICICI) is : ";
+			ans =  (ans < obj3);
 			cout<<ans.name;
 		}
 		else if(choice=='n')
 		{
-			ans = obj1>obj2;
-			ans = ans>obj3;
-			ans = ans>obj4;
-			cout<<"The bank that offers maximum interest is : ";
+			ans = obj1<obj2;
+			ans = ans<obj3;
+			ans = ans<obj4;
+			cout<<"The bank that offers minimum interest is : ";
 			cout<<ans.name;
 		}
 		else
