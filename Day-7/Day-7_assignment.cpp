@@ -69,12 +69,17 @@ class SmartFan
 		void onConnect()
 		{
 			if(status)
-				cout<<"\nFan device is already in the active state!"<<endl;
+				cout<<"Fan device is already in the active state!"<<endl;
 			else
-				{	status=true; cout<<"\nFan device status is turned ON!"<<endl;	}
+				{	status=true; cout<<"Fan device status is turned ON!"<<endl;	}
 		}
 		void onDisconnect()
-		{	status=false; cout<<"\nFan device status is turned OFF!"<<endl;	}
+		{
+			if(!status)
+				cout<<"Fan device is already in the inactive state!"<<endl;
+			else
+				{	status=false; cout<<"Fan device status is turned OFF!"<<endl;	}
+		}
 };
 
 class SmartLight
@@ -88,12 +93,17 @@ class SmartLight
 		void onConnect()
 		{
 			if(status)
-				cout<<"\nLight device is already in the active state!"<<endl;
+				cout<<"Light device is already in the active state!"<<endl;
 			else
-				{	status=true; cout<<"\nLight device status is turned ON!"<<endl;	}
+				{	status=true; cout<<"Light device status is turned ON!"<<endl;	}
 		}
 		void onDisconnect()
-		{	status=false; cout<<"\nLight device status is turned OFF!"<<endl;	}
+		{
+			if(!status)
+				cout<<"Light device is already in the inactive state!"<<endl;
+			else
+				{	status=false; cout<<"Light device status is turned OFF!"<<endl;	}
+		}
 };
 
 class DoorControl
@@ -106,12 +116,17 @@ class DoorControl
 		void onConnect()
 		{
 			if(status)
-				cout<<"\nDoor is already in the active state!"<<endl;
+				cout<<"Door is already in the active state!"<<endl;
 			else
-				{	status=true; cout<<"\nDoor device status is turned ON! Door is opened!"<<endl;	}
+				{	status=true; cout<<"Door device status is turned ON! Door is opened!"<<endl;	}
 		}
 		void onDisconnect()
-		{	status=false; cout<<"\nDoor device status is turned OFF!"<<endl;	}
+		{
+			if(!status)
+				cout<<"Door is already closed!"<<endl;
+			else
+				{	status=false; cout<<"Door status is turned OFF! Door is closed!"<<endl;	}
+		}
 };
 
 
@@ -136,8 +151,7 @@ class client
 			else if(condition[0]=="WaterLevel")
 				water_obj.onConnect();
 			else if(condition[0]=="GasDetection")
-				gas_obj.onConnect();
-			
+				gas_obj.onConnect();			
 		}
 		// The below function is used to check the device and perform the corresponding function entered by the user
 		void device_function()
@@ -183,7 +197,7 @@ class client
 		void function(string keypress)
 		{
 			stringstream ss(condition[2]);	// To convert the sensor_value from string data type to int data type
-			int var=0;
+			int var=0,flag=0;
 			ss>>var;
 			
 			if(condition[0]=="Temperature")
@@ -194,11 +208,7 @@ class client
 					device_function();
 				}
 				else
-				{	cout<<"\n"<<condition[0]<<" hasn't met the threshold!"<<endl; }
-				cout<<"Value of "<<condition[0]<<" is "<<temperature_obj.temperature<<endl;
-				cout<<"Value of Motion distance is "<<motion_obj.distance<<endl;
-				cout<<"Value of Water level is "<<water_obj.water_level<<endl;
-				cout<<"Value of Gas level is "<<gas_obj.gas_level<<endl;
+				{	flag=1; }
 			}
 			else if(condition[0]=="Motion")
 			{
@@ -208,11 +218,7 @@ class client
 					device_function();
 				}
 				else
-				{	cout<<"\n"<<condition[0]<<" hasn't met the threshold! Value of "<<condition[0]<<" is "<<motion_obj.distance<<endl; }
-				cout<<"Value of Temperature is "<<temperature_obj.temperature<<endl;
-				cout<<"Value of "<<condition[0]<<" is "<<motion_obj.distance<<endl;
-				cout<<"Value of Water level is "<<water_obj.water_level<<endl;
-				cout<<"Value of Gas level is "<<gas_obj.gas_level<<endl;
+				{	flag=1; }
 			}
 			else if(condition[0]=="WaterLevel")
 			{
@@ -222,11 +228,7 @@ class client
 					device_function();
 				}
 				else
-				{	cout<<"\n"<<condition[0]<<" hasn't met the threshold! Value of "<<condition[0]<<" is "<<water_obj.water_level<<endl;  }
-				cout<<"Value of Temperature is "<<temperature_obj.temperature<<endl;
-				cout<<"Value of Motion distance is "<<motion_obj.distance<<endl;
-				cout<<"Value of "<<condition[0]<<" is "<<water_obj.water_level<<endl;
-				cout<<"Value of Gas level is "<<gas_obj.gas_level<<endl;
+				{	flag=1; }
 			}
 			else if(condition[0]=="GasDetection")
 			{
@@ -236,16 +238,25 @@ class client
 					device_function();
 				}
 				else
-				{	cout<<"\n"<<condition[0]<<" hasn't met the threshold! Value of "<<condition[0]<<" is "<<gas_obj.gas_level<<endl;  }
-				cout<<"Value of Temperature is "<<temperature_obj.temperature<<endl;
-				cout<<"Value of Motion distance is "<<motion_obj.distance<<endl;
-				cout<<"Value of Water level is "<<water_obj.water_level<<endl;
-				cout<<"Value of "<<condition[0]<<" is "<<gas_obj.gas_level<<endl;
+				{	flag=1; }				
 			}
-			else
-				cout<<"\nEnter a valid sensor!"<<endl;
+
+			if(flag==1)
+			{
+				if(condition[3]=="Fan")
+					fan_obj.onDisconnect();
+				else if(condition[3]=="Light")
+					light_obj.onDisconnect();
+				else
+					door_obj.onDisconnect();
+				cout<<condition[0]<<" hasn't met the threshold!"<<endl;
+			}
+			cout<<"Value of Temperature is "<<temperature_obj.temperature<<endl;
+			cout<<"Value of Motion distance is "<<motion_obj.distance<<endl;
+			cout<<"Value of Water level is "<<water_obj.water_level<<endl;
+			cout<<"Value of Gas level is "<<gas_obj.gas_level<<endl;
 		}
-		// Destructor which disenables the status variable of the corresponding sensor and device entered by the user
+		// Destructor which disables the status variable of the corresponding sensor and device entered by the user
 		~client()
 		{
 			if(condition[0]=="Temperature")
