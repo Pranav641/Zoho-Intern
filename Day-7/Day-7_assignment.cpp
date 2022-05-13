@@ -153,52 +153,55 @@ class client
 			else if(condition[0]=="GasDetection")
 				gas_obj.onConnect();			
 		}
-		// The below function is used to check the device and perform the corresponding function entered by the user
-		void device_function()
-		{
-			if(condition[3]=="Fan" && condition[4]=="turnOn")
-				fan_obj.onConnect();
-			else if(condition[3]=="Fan" && condition[4]=="turnOff")
-				fan_obj.onDisconnect();
-			else if(condition[3]=="Light" && condition[4]=="turnOn")
-				light_obj.onConnect();
-			else if(condition[3]=="Light" && condition[4]=="turnOff")
-				light_obj.onDisconnect();
-			else if(condition[3]=="Door" && condition[4]=="turnOn")
-				door_obj.onConnect();
-			else if(condition[3]=="Door" && condition[4]=="turnOff")
-				door_obj.onDisconnect();
-			else
-				cout<<"\nEnter a valid device and function"<<endl;
-		}
-		// The below function is used to check the keypress events and update the corresponding data
-		void Keypress_events(string keypress)
-		{
-			if(keypress=="ti")
-				temperature_obj.temperature++;
-			else if(keypress =="td")
-				temperature_obj.temperature--;
-			else if(keypress=="mi")
-				motion_obj.distance++;
-			else if(keypress =="md")
-				motion_obj.distance--;
-			else if(keypress=="wi")
-				water_obj.water_level++;
-			else if(keypress =="wd")
-				water_obj.water_level--;
-			else if(keypress=="gi")
-				gas_obj.gas_level++;
-			else if(keypress=="gd")
-				gas_obj.gas_level--;
-			else
-				cout<<"Enter a valid keypress event!"<<endl;			
-		}
+		
 		// The below function checks the condition entered by the user and evaluate the Then: clause accordingly
 		void function(string keypress)
 		{
 			stringstream ss(condition[2]);	// To convert the sensor_value from string data type to int data type
 			int var=0,flag=0;
 			ss>>var;
+			
+			// The below function is used to check the device and perform the corresponding function entered by the user
+    		auto device_function = [=]()
+    		{
+    			if(condition[3]=="Fan" && condition[4]=="turnOn")
+    				fan_obj.onConnect();
+    			else if(condition[3]=="Fan" && condition[4]=="turnOff")
+    				fan_obj.onDisconnect();
+    			else if(condition[3]=="Light" && condition[4]=="turnOn")
+    				light_obj.onConnect();
+    			else if(condition[3]=="Light" && condition[4]=="turnOff")
+    				light_obj.onDisconnect();
+    			else if(condition[3]=="Door" && condition[4]=="turnOn")
+    				door_obj.onConnect();
+    			else if(condition[3]=="Door" && condition[4]=="turnOff")
+    				door_obj.onDisconnect();
+    			else
+    				cout<<"\nEnter a valid device and function"<<endl;
+    		};
+			
+		    // The below Lambda function is used to check the keypress events and update the corresponding data	
+		   	auto Keypress_events = [&](string keypress)
+    		{
+    			if(keypress=="ti")
+    				temperature_obj.temperature++;
+    			else if(keypress =="td")
+    				temperature_obj.temperature--;
+    			else if(keypress=="mi")
+    				motion_obj.distance++;
+    			else if(keypress =="md")
+    				motion_obj.distance--;
+    			else if(keypress=="wi")
+    				water_obj.water_level++;
+    			else if(keypress =="wd")
+    				water_obj.water_level--;
+    			else if(keypress=="gi")
+    				gas_obj.gas_level++;
+    			else if(keypress=="gd")
+    				gas_obj.gas_level--;
+    			else
+    				cout<<"Enter a valid keypress event!"<<endl;    						
+    		};
 			
 			if(condition[0]=="Temperature")
 			{
@@ -274,7 +277,7 @@ class client
 				light_obj.onDisconnect();
 			else if(condition[3]=="Door")
 				door_obj.onDisconnect();
-		}
+		};
 };
 
 
