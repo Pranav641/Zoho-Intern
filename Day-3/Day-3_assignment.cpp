@@ -5,9 +5,9 @@ int group_index=1, leader_group_index=0, leadergroup=INT_MIN;
 
 int DFS(int N,int M,int i,int j,int **members,int **visited)
 {
-	int result=0;
-	if (i<0 || i>N-1 || j<0 || j>M-1 || visited[i][j] || members[i][j]==0)
-	    return 0;
+    int result=0;
+    if (i<0 || i>N-1 || j<0 || j>M-1 || visited[i][j] || members[i][j]==0)
+    	return 0;
     
     visited[i][j]=group_index;    
     // To check the top element
@@ -26,16 +26,16 @@ int DFS(int N,int M,int i,int j,int **members,int **visited)
 void min_distance(int N,int M,int i,int j,int** visited,int* group_distance,int leader_group_index,int c)
 {
     if(i<0 || i>N-1 || j<0 || j>M-1 || visited[i][j] == leader_group_index || visited[i][j] == -1 || group_distance[visited[i][j]-1] == 1)
-		return;
+	return;
     if(visited[i][j] != 0)
-	{
+    {
         group_distance[visited[i][j]-1] = min(group_distance[visited[i][j]-1],c);
         return;
     }
     c++;
     visited[i][j] = -1;
     
-    min_distance(N,M,i-1,j,visited,group_distance,leader_group_index,c);	// To check the top element
+    min_distance(N,M,i-1,j,visited,group_distance,leader_group_index,c);    // To check the top element
     min_distance(N,M,i,j+1,visited,group_distance,leader_group_index,c);    // To check the right element
     min_distance(N,M,i+1,j,visited,group_distance,leader_group_index,c);    // To check the bottom element
     min_distance(N,M,i,j-1,visited,group_distance,leader_group_index,c);    // To check the left element
@@ -53,9 +53,9 @@ int* count_group_members(int N,int M,int **members,int **visited, int groups[])
 		for(j=0;j<M;j++)
 		{
 			if (visited[i][j]==0 && members[i][j]!=0)
-    		{
-        		result = DFS(N,M,i,j,members,visited);
-        		groups[k] = result;
+    			{
+        			result = DFS(N,M,i,j,members,visited);
+        			groups[k] = result;
 				if(leadergroup<groups[k])
 				{
 					leadergroup = groups[k];
@@ -82,7 +82,6 @@ int main()
 	int **visited = new int *[N];
 	int *groups = new int[N*M];
 	int *group_distance = new int[group_index];
-
 	
 	for(i=0;i<N;i++)
 	{
@@ -111,28 +110,28 @@ int main()
 	cout<<leadergroup<<endl;
 	
 	// group_distance stores the minimum distance from the leadergroup to all the groups
-    for(i=0;i<group_index;i++)
-        group_distance[i] = INT_MAX;
+    	for(i=0;i<group_index;i++)
+        	group_distance[i] = INT_MAX;
     
-    for(i=0;i<N;i++)
+    	for(i=0;i<N;i++)
 	{
-        for(j=0;j<M;j++)
+        	for(j=0;j<M;j++)
 		{
-            if(visited[i][j] == leader_group_index)
+            		if(visited[i][j] == leader_group_index)
 			{
-                min_distance(N,M,i-1,j,visited,group_distance,leader_group_index,0);
-                min_distance(N,M,i,j+1,visited,group_distance,leader_group_index,0);
-                min_distance(N,M,i+1,j,visited,group_distance,leader_group_index,0);
-                min_distance(N,M,i,j-1,visited,group_distance,leader_group_index,0);
-            }
-        }
-    }
-    cout<<"\nShortest path to all other groups :"<<endl;
-    for(i=0;i<group_index;i++)
+                		min_distance(N,M,i-1,j,visited,group_distance,leader_group_index,0);
+                		min_distance(N,M,i,j+1,visited,group_distance,leader_group_index,0);
+                		min_distance(N,M,i+1,j,visited,group_distance,leader_group_index,0);
+                		min_distance(N,M,i,j-1,visited,group_distance,leader_group_index,0);
+            		}
+        	}
+    	}
+    	cout<<"\nShortest path to all other groups :"<<endl;
+    	for(i=0;i<group_index;i++)
 	{
-        if(leadergroup != groups[i])
-        	cout<<group_distance[i]<<"  ";
-    }
+        	if(leadergroup != groups[i])
+        		cout<<group_distance[i]<<"  ";
+    	}
 		
 	for(i=0;i<N;i++)
 	{
