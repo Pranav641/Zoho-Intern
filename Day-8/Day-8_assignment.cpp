@@ -30,7 +30,7 @@ class mobile
 	        user[index].amount += amount;
 	    }
 	    
-		void bill_payments(int i,vector<mobile> &user)
+	    void bill_payments(int i,vector<mobile> &user)
 	    {
 	        cout<<"Enter the amount: ";
 	        cin>>amount;	
@@ -96,7 +96,7 @@ class landline
 	        }
 	        else if(amount > user[i].amount)
 	        {
-	        	cout<<"Rs. "<<(amount-user[i].amount)<<" is paid in excess.";
+	            cout<<"Rs. "<<(amount-user[i].amount)<<" is paid in excess.";
 	            user[i].amount = 0;
 	        }
 	        else
@@ -117,12 +117,12 @@ class bill_payments
 	    void add_connection(T &user)
 	    {
 	        if (var.add_Connection(user.number) == true)
-            {
-                cout<<"The connection is added.";
-                connections.push_back(var);
-            }
-            else
-                cout<<"\nThe connection is not added.";	
+                {
+                	cout<<"The connection is added.";
+                	connections.push_back(var);
+                }
+                else
+                	cout<<"\nThe connection is not added.";	
 	    }
 	
 	    bool update_bill(long long int number)
@@ -134,9 +134,9 @@ class bill_payments
 	    		{
 	    			var.update_bill(i,connections);
 	    			visited = true;  break;
-				}
 			}
-			return visited;
+		}
+		return visited;
 	    }
 	
 	    bool bill_payment(long long int number)
@@ -148,9 +148,9 @@ class bill_payments
 	    		{
 	    			var.bill_payments(i,connections);
 	    			visited = true;  break;
-				}
 			}
-			return visited;
+		}
+		return visited;
 	    }
 	
 	    void print_contents()
@@ -170,11 +170,11 @@ int main()
     mobile obj1;
     landline obj2;
     
-	long long int number;
+    long long int number;
     int choice;
     do
     {        
-		cout<<"\n\n 1. To add a mobile connection\n 2. To add a landline connection\n 3. Display mobile information\n 4. Display landline information\n 5. To update the bill\n 6. To pay bills\n 7. To exit"<<endl;
+	cout<<"\n\n 1. To add a mobile connection\n 2. To add a landline connection\n 3. Display mobile information\n 4. Display landline information\n 5. To update the bill\n 6. To pay bills\n 7. To exit"<<endl;
         cout<<"\nEnter the choice: ";
         cin>>choice;
         switch (choice)
@@ -184,34 +184,34 @@ int main()
 	        	cin>>number;
 	        	obj1.number = number;
 	        	m_obj.add_connection(obj1);
-				break;
-			}
+			break;
+		}
 	        case 2: {
 	        	cout<<"\nEnter the number: ";
 	        	cin>>number;
 	        	obj2.number = number;
 	        	l_obj.add_connection(obj2);
-				break;
-			}	
+			break;
+		}	
 	        case 3: m_obj.print_contents();	break;	
 	        case 4: l_obj.print_contents();   break;
-	        case 5:    {
-	            cout<<"\nEnter the number: ";
-	            cin>>number;				
-				if(m_obj.update_bill(number) || l_obj.update_bill(number))
-					cout<<"\nBill amount updated";
-				else
-					cout<<"No number found!";
-				break;
+	        case 5: {
+	                cout<<"\nEnter the number: ";
+	                cin>>number;				
+			if(m_obj.update_bill(number) || l_obj.update_bill(number))
+				cout<<"\nBill amount updated";
+			else
+				cout<<"No number found!";
+			break;
 	        }    
 	        case 6:     {
-	            cout<<"\nEnter the number: ";
-	            cin>>number;
-	            if(m_obj.bill_payment(number) || l_obj.bill_payment(number))
-					cout<<"\nBill amount paid";
-				else
-					cout<<"No number found!";
-				break;
+	                cout<<"\nEnter the number: ";
+	                cin>>number;
+	                if(m_obj.bill_payment(number) || l_obj.bill_payment(number))
+				cout<<"\nBill amount paid";
+			else
+				cout<<"No number found!";
+			break;
 	        }
 	        case 7: cout<<"System is exiting"<<endl;
 	        default: cout<<"\nEnter a valid choice!!!";
