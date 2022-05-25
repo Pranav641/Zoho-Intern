@@ -181,7 +181,7 @@ class client
     		};
 			
 		    // The below Lambda function is used to check the keypress events and update the corresponding data	
-		   	auto Keypress_events = [&](string keypress)
+			auto Keypress_events = [&](string keypress)
     		{
     			if(keypress=="ti")
     				temperature_obj.temperature++;
