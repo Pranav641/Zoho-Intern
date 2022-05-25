@@ -4,7 +4,7 @@ using namespace std;
 class Bank
 {
 	public:
-		string date,bank_type;
+		string date,bank_type;		
 		float interest;
 		string name;
 		Bank();
