@@ -44,10 +44,10 @@ Rectangle::Rectangle(float left,float top,float width,float height)
 
 Rectangle::Rectangle(Rectangle &obj)
 {
-	this->left=obj.left;
-	this->top=obj.top;
-	this->width=obj.width;
-	this->height=obj.height;
+	this->left=new int(*obj.left);
+	this->top=new int(*obj.left);
+	this->width=new int(*obj.left);
+	this->height=new int(*obj.left);
 	
 	area = new int((*width)*(*height));
 }
