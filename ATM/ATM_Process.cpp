@@ -159,7 +159,7 @@ void ATM::showAtmOperations()
 					break;
 				}
 				case 2: {
-					int amount, pin_no, remaining_amount=0;
+					int amount, pin_no;
 					cout<<"Enter the amount to be withdrawn: ";
 					cin>>amount;
 					// if the amount to be withdrawn is greater than 10000 or lesser than 100 then alert message is shown
@@ -179,7 +179,7 @@ void ATM::showAtmOperations()
 						fstream file_withdraw;
 						file_withdraw.open("ATM_details.txt",ios::out|ios::in);
 						if(!file_withdraw)
-							cout<<"Error!"<<endl;
+							cout<<"Error in file opening!"<<endl;
 						else
 						{
 							string denomination, value;
@@ -202,7 +202,7 @@ void ATM::showAtmOperations()
 						else if(amount>5000)
 						{
 							// inorder to satisfy the conditions(minimum 2-Rs.2000 and minimum 2-Rs.500), amounts ranging from 5000 to 5500 
-							// cannot be vended to minimum of 10 currency notes to maximum of 15 currency notes 
+							// cannot be vended to minimum of 10 currency notes and maximum of 15 currency notes 
 							if(amount>5000 && amount<=5500)
 							{
 								denom_2000 = amount/2000;
@@ -304,7 +304,7 @@ void ATM::showAtmOperations()
 
 							file_thread_sender.open((sender_acc_no+"_transactions.txt").c_str(),ios::app);
 							if(!file_thread_sender)
-								cout<<"Error!"<<endl;
+								cout<<"Error in file opening!"<<endl;
 							else
 							{
 								// below statement is used to write the description in the corresponding file using asynchronous thread with a delay of 5sec
@@ -338,7 +338,7 @@ void ATM::showAtmOperations()
 						
 						file_receiver.open("Customer_details.txt",ios::out|ios::in);
 						if(!file_receiver)
-							cout<<"Error!";
+							cout<<"Error in file opening!";
 						else
 						{
 							flag = false;
@@ -379,9 +379,6 @@ void ATM::showAtmOperations()
 									file_receiver >> receiver_pin;
 									file_receiver << " " << (stoi(receiver_acc_balance) + amount);
 
-									// fstream file_sender, file_receiver;
-									// file_sender.open("Customer_details.txt",ios::out | ios::in);
-									// file_receiver.open("Customer_details.txt",ios::out | ios::in);
 									// below lines are used to write the description using asynchronous thread with a delay of 5 seconds
 									future<void> thread_sender = async(launch::async,[&](){
 										file_thread_sender << transaction_number <<"-"<< "Transfer to "<< receiver_acc_no<<"-"<<"Debit"<<"-"<< amount<<"-"<<(stoi(sender_acc_balance)-amount)<<endl;
@@ -433,9 +430,9 @@ void ATM::showAtmOperations()
 				case 5: {
 					fstream file_mini;
 					string transaction_num, description, type, amount_mini,balance_mini;
-					file_mini.open((sender_acc_no+".txt").c_str(),ios::out | ios::in);
+					file_mini.open((sender_acc_no+"_transactions.txt").c_str(),ios::in);
 					if(!file_mini)
-						cout<<"Error";
+						cout<<"Error in file opening";
 					else
 					{
 						int no_of_lines=0;
@@ -448,8 +445,7 @@ void ATM::showAtmOperations()
 								break;
 							no_of_lines++;
 						}
-						cout<<"No of lines: "<<no_of_lines<<endl;
-
+						file_mini.clear();
 						file_mini.seekg(0);
 						cout<<"------------------------------------------------------------------------------------------------"<<endl;
 						cout<<"|"<<setw(20)<<left<<"Transaction Number"<<setfill(' ')<<"|"<<setw(20)<<left<<"Description"<<setfill(' ')<<"|"<<setw(15)<<left<<"Credit/Debit"<<setfill(' ')<<"|"<<setw(15)<<left<<"Amount"<<setfill(' ')<<"|"<<setw(20)<<left<<"Closing Balance"<<setfill(' ')<<"|"<<endl;
