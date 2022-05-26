@@ -195,91 +195,71 @@ void ATM::showAtmOperations()
 							}
 						}							
 
-						int i,j,k,denom_2000,denom_500,denom_100;
+						int i,j,k,denom_2000=0,denom_500=0,denom_100=0;
 						// below if statement is used to check whether the user enters the amount in the multiples of 100 so that it can be vended
 						if(amount%100!=0)
 							cout<<"Enter a proper amount!!!"<<endl;
+						else if(amount<=5000)
+						{
+							if(amount>=3000)
+							{
+								// below if is used to assign the basic necessary conditions as specified (atleast 1 2000, 1 500 and 10 100 notes)
+								if(denominations[0]>=1 && denominations[1]>=1 && denominations[2]>=10)
+								{	amount -= 3500; denom_2000=1; denom_500=1;  denom_100 = 10; }
+								else
+									check=1;
+								// below if is used for assigning extra 500 notes
+								if(denominations[1]>=(amount/500))
+								{	denom_500 += amount/500; amount-=((denom_500-1)*500); }
+								else if(amount>=(denominations[1]*500))
+								{	denom_500 += denominations[1];	amount-=((denom_500-1)*500); }
+								// As already 10 100 notes were used, and we can still use only 5 more. So if amount is greater than 500, it means we need to use more 100 notes than specified
+								if(amount>500)
+									check=1;
+								else
+								{	denom_100 += amount/100; amount-=((denom_100-1)*100); }
+							}
+							else if(amount>1000)
+							{
+								// below if is used to satisfy the condition of vending atleast 10 Rs.100 notes if amount>1500
+								if(amount>=1500)
+								{	denom_100 = 10; amount-=1000; }
+								denom_500 = 1; amount-=500;
+								if(denominations[1]>=(amount/500))
+								{	denom_500 += amount/500; amount-=((denom_500-1)*500); }
+								else if(amount>=(denominations[1]*500))
+								{	denom_500 += denominations[1];	amount-=((denom_500-1)*500); }
+								if(amount>500)
+									check=1;
+								else
+								{	denom_100 += amount/100;  amount-=((denom_100-1)*100); }
+							}
+							else
+							{
+								// for amounts ranging from Rs.100 to Rs.1000, below 2 statements will be executed
+								denom_500 += amount/500;
+								denom_100 += (amount%500)/100;
+							}
+						}
 						else if(amount>5000)
 						{
-							// inorder to satisfy the conditions(minimum 2-Rs.2000 and minimum 2-Rs.500), amounts ranging from 5000 to 5500 
-							// cannot be vended to minimum of 10 currency notes and maximum of 15 currency notes 
-							if(amount>5000 && amount<=5500)
-							{
-								denom_2000 = amount/2000;
-								denom_500 = (amount%2000)/500;
-								denom_100 = ((amount%2000)%500)/100;
-								if(denom_2000<=denominations[0] && denom_500<=denominations[1] && denom_100<=denominations[2])
-								{	check=1; }
-							}
-							else
-							{
-								// for remaining amounts from 5600 to 10000, it can be vended by using a nested for, where i is initialised to 
-								// 4000(because it is mentioned that minimum 2-Rs.2000 must be vended), j is initialised to 1000(minimum 2-Rs.500
-								// notes must be vended) and the condition part of inner loop is k<=1000(because maximum of only 10-Rs.100 notes
-								// can be vended)
-								for(i=4000;i<=amount;i+=2000)
-								{
-									for(j=1000;j<=amount;j+=500)
-									{
-										for(k=100;k<=1000;k+=100)
-										{
-											denom_2000 = i/2000; denom_500 = j/500;  denom_100 = k/100;
-											if((i+j+k==amount && ((i/2000)+(j/500)+(k/100))>=10 && ((i/2000)+(j/500)+(k/100))<=15) && (denom_2000<=denominations[0] && denom_500<=denominations[1] && denom_100<=denominations[2]))
-											{
-												check=1; break;
-											}
-										}
-										if(check==1) break;
-									}
-									if(check==1) break;
-								}
-							}
-						}
-						else
-						{
-							// below if statement is used to satisfy the condition(reduce for lesser amount - Rs.100 to Rs.1000)
+							// Similarly, below statements are used to satisfy the condtions (atleast 2 Rs.2000 and 2 Rs.500)
+							denom_2000 = 2; 	denom_500 = 2;
+							amount -= 5000;
+							if(denominations[0]>=(amount/2000))
+							{	denom_2000+=(amount/2000); amount-=((denom_2000-2)*2000); }
+							else if(amount>=(denominations[0]*2000))
+							{	denom_2000 += denominations[0];	amount-=((denom_2000-2)*2000);}
+							if(denominations[1]>=(amount/500))
+							{	denom_500 += amount/500; amount-=((denom_500-2)*500); }
+							else if(amount>=(denominations[1]*500))
+							{	denom_500 += denominations[1];	amount-=((denom_500-2)*500); }
 							if(amount<=1000)
-							{
-								denom_2000 = 0; denom_500 = amount/500; denom_100 = (amount%500)/100;
-								check=1;
-							}
-							else if(amount>1000 && amount<=3000)
-							{
-								// A22mount ranging from Rs.1000 to Rs.3000 can be vended by initialising i to 500(because it is mentioned that minimum
-								// of 1-Rs.500 note must be vended)
-								for(i=500;i<=amount;i+=500)
-								{
-									for(j=100;j<=amount;j+=100)
-									{
-										denom_2000 = 0; denom_500 = i/500;  denom_100 = j/100;
-										if ((i+j==amount && ((i/500)+(j/100))>=10 && ((i/500)+(j/100))<=15) && (denom_500<=denominations[1] && denom_100<=denominations[2]))
-										{ check=1; break; }
-									}
-									if(check==1) break;
-								}
-							}
+								denom_100 = amount/100;
 							else
-							{
-								// Amount ranging from Rs.3100 to Rs.5000 can be vended by initialising i to 2000(because it is mentioned that minimum
-								// of 1-Rs.2000 note must be vended), j is initialised to 500(because atleast 1-Rs.500 note must be vended)
-								for(i=2000;i<=amount;i+=2000)
-								{
-									for(j=500;j<=amount;j+=500)
-									{
-										for(k=100;k<=amount;k+=100)
-										{
-											denom_2000 = i/2000; denom_500 = j/500;  denom_100 = k/100;
-											if ((i+j+k==amount && ((i/2000)+(j/500)+(k/100))>=10 && ((i/2000)+(j/500)+(k/100))<=15) && (denom_2000<=denominations[0] && denom_500<=denominations[1] && denom_100<=denominations[2]))
-											{ check=1; break; }
-										}
-										if(check==1) break;
-									}
-									if(check==1) break;
-								}
-								
-							}
+								check=1;
 						}
-						if(check==0)
+						if(check==1)
 							cout<<"No sufficient denominations in the ATM"<<endl;
 						else
 						{
@@ -402,7 +382,7 @@ void ATM::showAtmOperations()
 					fstream file_atm;
 					file_atm.open("ATM_details.txt",ios::in);
 					if(!file_atm)
-						cout<<"Error!";
+						cout<<"Error in file opening!";
 					else
 					{
 						string denom, number;
@@ -432,7 +412,7 @@ void ATM::showAtmOperations()
 					string transaction_num, description, type, amount_mini,balance_mini;
 					file_mini.open((sender_acc_no+"_transactions.txt").c_str(),ios::in);
 					if(!file_mini)
-						cout<<"Error in file opening";
+						cout<<"Error in file opening!";
 					else
 					{
 						int no_of_lines=0;
