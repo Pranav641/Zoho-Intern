@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message User
+{
+    string email = 1;
+    string password = 2;
+    string name = 3;
+    int32 age = 4;
+    int32 userID = 5;
+    string location = 6;
+}
+
+message Users
+{
+    repeated User users = 1;
+}
