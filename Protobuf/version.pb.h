@@ -178,30 +178,15 @@ class Version final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kCreatedTimeFieldNumber = 2,
-    kProjectNameFieldNumber = 5,
-    kContentsFieldNumber = 7,
-    kOperationsFieldNumber = 8,
+    kProjectNameFieldNumber = 4,
+    kContentsFieldNumber = 6,
+    kOperationsFieldNumber = 7,
     kVersionIdFieldNumber = 1,
-    kVersionNumberFieldNumber = 3,
-    kProjectIdFieldNumber = 4,
-    kUserIdFieldNumber = 6,
+    kVersionNumberFieldNumber = 2,
+    kProjectIdFieldNumber = 3,
+    kUserIdFieldNumber = 5,
   };
-  // string created_time = 2;
-  void clear_created_time();
-  const std::string& created_time() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_created_time(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_created_time();
-  PROTOBUF_NODISCARD std::string* release_created_time();
-  void set_allocated_created_time(std::string* created_time);
-  private:
-  const std::string& _internal_created_time() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_created_time(const std::string& value);
-  std::string* _internal_mutable_created_time();
-  public:
-
-  // string project_name = 5;
+  // string project_name = 4;
   void clear_project_name();
   const std::string& project_name() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -215,7 +200,7 @@ class Version final :
   std::string* _internal_mutable_project_name();
   public:
 
-  // string contents = 7;
+  // string contents = 6;
   void clear_contents();
   const std::string& contents() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -229,7 +214,7 @@ class Version final :
   std::string* _internal_mutable_contents();
   public:
 
-  // string operations = 8;
+  // string operations = 7;
   void clear_operations();
   const std::string& operations() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -252,7 +237,7 @@ class Version final :
   void _internal_set_version_id(int32_t value);
   public:
 
-  // int32 version_number = 3;
+  // int32 version_number = 2;
   void clear_version_number();
   int32_t version_number() const;
   void set_version_number(int32_t value);
@@ -261,7 +246,7 @@ class Version final :
   void _internal_set_version_number(int32_t value);
   public:
 
-  // int32 project_id = 4;
+  // int32 project_id = 3;
   void clear_project_id();
   int32_t project_id() const;
   void set_project_id(int32_t value);
@@ -270,7 +255,7 @@ class Version final :
   void _internal_set_project_id(int32_t value);
   public:
 
-  // int32 user_id = 6;
+  // int32 user_id = 5;
   void clear_user_id();
   int32_t user_id() const;
   void set_user_id(int32_t value);
@@ -287,7 +272,6 @@ class Version final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr created_time_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr project_name_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr contents_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr operations_;
@@ -488,57 +472,7 @@ inline void Version::set_version_id(int32_t value) {
   // @@protoc_insertion_point(field_set:Version.version_id)
 }
 
-// string created_time = 2;
-inline void Version::clear_created_time() {
-  _impl_.created_time_.ClearToEmpty();
-}
-inline const std::string& Version::created_time() const {
-  // @@protoc_insertion_point(field_get:Version.created_time)
-  return _internal_created_time();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void Version::set_created_time(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.created_time_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:Version.created_time)
-}
-inline std::string* Version::mutable_created_time() {
-  std::string* _s = _internal_mutable_created_time();
-  // @@protoc_insertion_point(field_mutable:Version.created_time)
-  return _s;
-}
-inline const std::string& Version::_internal_created_time() const {
-  return _impl_.created_time_.Get();
-}
-inline void Version::_internal_set_created_time(const std::string& value) {
-  
-  _impl_.created_time_.Set(value, GetArenaForAllocation());
-}
-inline std::string* Version::_internal_mutable_created_time() {
-  
-  return _impl_.created_time_.Mutable(GetArenaForAllocation());
-}
-inline std::string* Version::release_created_time() {
-  // @@protoc_insertion_point(field_release:Version.created_time)
-  return _impl_.created_time_.Release();
-}
-inline void Version::set_allocated_created_time(std::string* created_time) {
-  if (created_time != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.created_time_.SetAllocated(created_time, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.created_time_.IsDefault()) {
-    _impl_.created_time_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:Version.created_time)
-}
-
-// int32 version_number = 3;
+// int32 version_number = 2;
 inline void Version::clear_version_number() {
   _impl_.version_number_ = 0;
 }
@@ -558,7 +492,7 @@ inline void Version::set_version_number(int32_t value) {
   // @@protoc_insertion_point(field_set:Version.version_number)
 }
 
-// int32 project_id = 4;
+// int32 project_id = 3;
 inline void Version::clear_project_id() {
   _impl_.project_id_ = 0;
 }
@@ -578,7 +512,7 @@ inline void Version::set_project_id(int32_t value) {
   // @@protoc_insertion_point(field_set:Version.project_id)
 }
 
-// string project_name = 5;
+// string project_name = 4;
 inline void Version::clear_project_name() {
   _impl_.project_name_.ClearToEmpty();
 }
@@ -628,7 +562,7 @@ inline void Version::set_allocated_project_name(std::string* project_name) {
   // @@protoc_insertion_point(field_set_allocated:Version.project_name)
 }
 
-// int32 user_id = 6;
+// int32 user_id = 5;
 inline void Version::clear_user_id() {
   _impl_.user_id_ = 0;
 }
@@ -648,7 +582,7 @@ inline void Version::set_user_id(int32_t value) {
   // @@protoc_insertion_point(field_set:Version.user_id)
 }
 
-// string contents = 7;
+// string contents = 6;
 inline void Version::clear_contents() {
   _impl_.contents_.ClearToEmpty();
 }
@@ -698,7 +632,7 @@ inline void Version::set_allocated_contents(std::string* contents) {
   // @@protoc_insertion_point(field_set_allocated:Version.contents)
 }
 
-// string operations = 8;
+// string operations = 7;
 inline void Version::clear_operations() {
   _impl_.operations_.ClearToEmpty();
 }
