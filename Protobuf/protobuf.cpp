@@ -19,6 +19,7 @@ class protobuf
         void sign_in();
         void project_portal();
         void version_change();
+        void version_revert(string contents, string operation);
 };
 
 protobuf:: protobuf()
@@ -114,7 +115,7 @@ void protobuf::sign_in()
         if(check(email,password))
         {
             status = true;
-            cout<<"Signed in successfully!!!"<<endl;
+            cout<<"Signed in successfully!!!\n"<<endl;
         }
         else
         {
@@ -150,10 +151,11 @@ void protobuf::sign_in()
             
                 user_data.SerializeToOstream(&file);
                 user_id = UserID;
-                cout<<"Account created successfully!!!"<<endl;
+                cout<<"Account created successfully!!!\n"<<endl;
                 status = true;
             }
-        }        
+        }
+        project_portal();       
     }
 }
 
@@ -168,7 +170,6 @@ void protobuf::project_portal()
         bool file_status = false, flag, operation_flag = false;
         fstream project_file, project_data_file, version_data_file;
         project_data_file.open("projects.txt",ios::app | ios::in);
-        Versions version_obj;
 
         cout<<"Enter  1. To create a New file   2. To Display the projects:   ";
         cin>>choice;
@@ -362,36 +363,42 @@ void protobuf::project_portal()
         }
         if(operation_flag)
         {
-            // every changes done are now updated in the version proto
-            ifstream version_data_read;
-            version_data_read.open(("./"+to_string(user_id)+"/"+to_string(user_id)+"_"+file_name+"_version.txt").c_str(),ios::in);
-            Versions version_data;
-            version_data.ParseFromIstream(&version_data_read);
-            if(version_data.versions_size()!=0)
-            {
-                const Version& temp = version_data.versions(version_data.versions_size()-1);
-                versionID = temp.version_id();
-                if(versionID == N)
-                {   versionNum = temp.version_number()+1;   versionID=0; }
-            }
-            else
-            {   versionID++;    versionNum = 0; }
-
-            fstream version_data_file;
-            version_data_file.open(("./"+to_string(user_id)+"/"+to_string(user_id)+"_"+file_name+"_version.txt").c_str(),ios::app | ios::in);
-            
-            Version *version = version_obj.add_versions();
-            version->set_version_id(versionID);
-            version->set_version_number(versionNum);
-            version->set_project_id(projectID);
-            version->set_project_name(("./"+to_string(user_id)+"/"+file_name+".txt").c_str());
-            version->set_user_id(user_id);
-            version->set_contents(contents);
-            version->set_operations((operation+"\n").c_str());
-
-            version_obj.SerializeToOstream(&version_data_file);
+            version_revert(contents, operation);
         }       
     }
+}
+
+void protobuf::version_revert(string contents, string operation)
+{
+    // every changes done are now updated in the version proto
+    ifstream version_data_read;
+    version_data_read.open(("./"+to_string(user_id)+"/"+to_string(user_id)+"_"+file_name+"_version.txt").c_str(),ios::in);
+    Versions version_data;
+    version_data.ParseFromIstream(&version_data_read);
+    if(version_data.versions_size()!=0)
+    {
+        const Version& temp = version_data.versions(version_data.versions_size()-1);
+        versionID = temp.version_id();
+        if(versionID == N)
+        {   versionNum = temp.version_number()+1;   versionID=0; }
+    }
+    else
+    {   versionID++;    versionNum = 0; }
+
+    fstream version_data_file;
+    version_data_file.open(("./"+to_string(user_id)+"/"+to_string(user_id)+"_"+file_name+"_version.txt").c_str(),ios::app | ios::in);
+    
+    Versions version_obj;
+    Version *version = version_obj.add_versions();
+    version->set_version_id(versionID);
+    version->set_version_number(versionNum);
+    version->set_project_id(projectID);
+    version->set_project_name(("./"+to_string(user_id)+"/"+file_name+".txt").c_str());
+    version->set_user_id(user_id);
+    version->set_contents(contents);
+    version->set_operations((operation+"\n").c_str());
+
+    version_obj.SerializeToOstream(&version_data_file);
 }
 
 void protobuf::version_change()
@@ -422,23 +429,14 @@ void protobuf::version_change()
                     cout<<"Error";
                 else
                 {
-                    for(int i=0;i<(N*new_version_num) && i<version_data.versions_size();i++)
-                    {  
-                        const Version& version_info = version_data.versions(i);
-                        file.open(version_info.project_name(),ios::out);
-                        file.clear();
-                        file.seekg(0);
-
-                        if(version_info.operations() == "Remove" && version_info.contents() == " ")
-                            remove(version_info.project_name().c_str());
-                        else if(version_info.operations() == "New")
-                        {
-                            file.open(version_info.project_name(),ios::out);
-                            file << version_info.contents();
-                        }
-                        else
-                            file << version_info.contents();
-                    }
+                    const Version& version_info = version_data.versions((N*new_version_num)-1);
+                    file.open(version_info.project_name(),ios::out);
+                    if(version_info.operations() == "Remove" && version_info.contents() == " ")
+                        remove(version_info.project_name().c_str());
+                    else
+                        file << version_info.contents();
+                    version_revert(version_info.contents(), "Version_change");
+                    
                 }                
             }
         }
