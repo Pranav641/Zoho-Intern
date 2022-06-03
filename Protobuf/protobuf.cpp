@@ -24,13 +24,10 @@ class protobuf
 protobuf:: protobuf()
 {
     status = false;
-    UserID = 0;
-    user_id = 0;
-    projectID = 0;
-    versionNum = 0;
-    versionID = 0;
+    UserID = user_id = projectID = versionNum = versionID = 0;
 }
-
+// check function is used to check whether the user already has an account. If so, it will redirect to the sign-in function
+// else it will redirect to the sign up function
 bool protobuf::check(string email, string password)
 {
     fstream ifile;
@@ -45,6 +42,7 @@ bool protobuf::check(string email, string password)
         else
         {
             string pass;
+            // below loop is used to check whether the entered email and password matches with the previously created accounts
             for(int i=0;i<user_data.users_size();i++)
             {
                 const User& user_info = user_data.users(i);
@@ -65,9 +63,9 @@ bool protobuf::check(string email, string password)
             }
         }
     }
-     return false;
+    return false;
 }
-
+// validate_email is used to validate the email which is entered by the user
 bool protobuf::validate_email(string email)
 {
     if (!((email[0]>=65 && email[0]<=90) || (email[0]>=97 && email[0]<=122)))
@@ -107,11 +105,12 @@ void protobuf::sign_in()
     getline(cin>>ws,email);
     cout<<"Enter the Password:  ";
     cin>>password;
-    
+    // if the entered email is not valid, then an alert is shown
     if (!validate_email(email))
         cout<<"Entered Email is not valid!!! Re-enter the Email and password!"<<endl;
     else
     {
+        // check is used to check whether the user already has an account
         if(check(email,password))
         {
             status = true;
@@ -132,6 +131,8 @@ void protobuf::sign_in()
                 cout<<"Enter Location:  ";
                 cin>>location;
 
+                // below for loop is used to encrypt the password in the following manner.
+                // it adds +5 ASCII value for the odd characters and subtract -5 ASCII value for the even character
                 for(int i=0;i<password.length();i++)
                 {
                     if ((password.length()%2!=0) && (i==password.length()-1))
@@ -174,6 +175,8 @@ void protobuf::project_portal()
         switch(choice)
         {
             case 1: {
+                // below if else is used to check whether there is any directory for the user with their corresponding
+                // user id as the directory name
                 struct stat info;
                 if (stat(to_string(user_id).c_str(),&info)!=0)
                     flag = false;
@@ -181,13 +184,13 @@ void protobuf::project_portal()
                     flag = true;
                 else
                     flag = false;
-
+                // If there is no such directory, then new directory with name same as the user id is created
                 if(!flag)
                 {
                     mkdir(to_string(user_id).c_str(),0777);
                     cout<<"New directory "<<user_id<<" is created!!!"<<endl;
                 }
-                
+                // Below statements are used to get the name of the project to be created from the user and it creates a new project
                 cout<<"Enter the name of the file:   ";
                 cin>>file_name;
 
@@ -195,6 +198,7 @@ void protobuf::project_portal()
                 project_file.open(("./"+to_string(user_id)+"/"+file_name+".txt").c_str(),ios::app | ios::in);
 
                 contents = "";
+                // After creating a new project, the contents which are entered by the user are added to the project
                 cout<<"Enter the text. Enter -1 to exit:"<<endl;
                 getline(cin>>ws,s);
                 while(s.compare("-1")!=0)
@@ -213,11 +217,11 @@ void protobuf::project_portal()
                 project->set_project_name(name);
 
                 projects_data.SerializeToOstream(&project_data_file);
-
                 break;
             }
             case 2: {
                 cout<<"\nDisplaying the projects created:"<<endl;
+                // below for loop is used to list all the files under a specific directory
                 for(const auto &itr : filesystem::directory_iterator(("./"+to_string(user_id)).c_str()))
                 {
                     string fileName = "", file_name_ext = itr.path().filename().string();
@@ -262,8 +266,7 @@ void protobuf::project_portal()
                     break;
                 }
                 case 2: {    
-                    fstream project_new_file;
-                    project_new_file.open(("./"+to_string(user_id)+"/"+file_name+".txt").c_str(),ios::in | ios::out);                
+                    fstream project_new_file;                
                     cout<<"Enter  1. To update a particular line   2. To update the entire document:   ";
                     cin>>option;
                     if(option == 1)
@@ -281,7 +284,7 @@ void protobuf::project_portal()
                         getline(project_file,s);
                         while (getline(project_file,s))
                             contents = contents + s + "\n";
-
+                        project_new_file.open(("./"+to_string(user_id)+"/"+file_name+".txt").c_str(),ios::out);
                         project_new_file << contents;
                         operation_flag = true;
                            
@@ -295,6 +298,7 @@ void protobuf::project_portal()
                             contents = contents + s + "\n";
                             getline(cin>>ws,s);
                         }
+                        project_new_file.open(("./"+to_string(user_id)+"/"+file_name+".txt").c_str(),ios::out);
                         project_new_file << contents;
                         operation_flag = true;
                     }
@@ -358,10 +362,24 @@ void protobuf::project_portal()
         }
         if(operation_flag)
         {
+            // every changes done are now updated in the version proto
+            ifstream version_data_read;
+            version_data_read.open(("./"+to_string(user_id)+"/"+to_string(user_id)+"_"+file_name+"_version.txt").c_str(),ios::in);
+            Versions version_data;
+            version_data.ParseFromIstream(&version_data_read);
+            if(version_data.versions_size()!=0)
+            {
+                const Version& temp = version_data.versions(version_data.versions_size()-1);
+                versionID = temp.version_id();
+                if(versionID == N)
+                {   versionNum = temp.version_number()+1;   versionID=0; }
+            }
+            else
+            {   versionID++;    versionNum = 0; }
+
+            fstream version_data_file;
             version_data_file.open(("./"+to_string(user_id)+"/"+to_string(user_id)+"_"+file_name+"_version.txt").c_str(),ios::app | ios::in);
-            versionID++;
-            if(versionID == N)
-            {   versionNum++; versionID=0; }
+            
             Version *version = version_obj.add_versions();
             version->set_version_id(versionID);
             version->set_version_number(versionNum);
@@ -398,19 +416,30 @@ void protobuf::version_change()
             else
             {
                 fstream file;
-                const Version& version_info = version_data.versions(0);
-    
-                file.open(("./"+to_string(version_info.user_id())+"/"+version_info.project_name()+".txt"),ios::out);
-                file << (version_info.contents());
+                // here if the user enters the version number as 1, then the N(5) operations are reflected in the project file
 
-                for(int i=1;i<(5*new_version_num) && i<version_data.versions_size();i++)
+                if(!file)
+                    cout<<"Error";
+                else
                 {
-                    const Version& version_info = version_data.versions(i);
-                    if(version_info.operations() == "Remove" && version_info.contents() == " ")
-                        remove(("./"+to_string(user_id)+"/"+version_info.project_name()+".txt").c_str());
-                    else
-                        file << version_info.contents();
-                }
+                    for(int i=0;i<(N*new_version_num) && i<version_data.versions_size();i++)
+                    {  
+                        const Version& version_info = version_data.versions(i);
+                        file.open(version_info.project_name(),ios::out);
+                        file.clear();
+                        file.seekg(0);
+
+                        if(version_info.operations() == "Remove" && version_info.contents() == " ")
+                            remove(version_info.project_name().c_str());
+                        else if(version_info.operations() == "New")
+                        {
+                            file.open(version_info.project_name(),ios::out);
+                            file << version_info.contents();
+                        }
+                        else
+                            file << version_info.contents();
+                    }
+                }                
             }
         }
     }
