@@ -1,16 +1,19 @@
 #include <bits/stdc++.h>
+#define NUMBER_OF_CUSTOMERS 5
 using namespace std;
 
 class ATM
 {
-	int denominations[2];
+	int denominations[2], account_number[NUMBER_OF_CUSTOMERS],pin_number[NUMBER_OF_CUSTOMERS],account_balance[NUMBER_OF_CUSTOMERS];
 	static int transaction_number;
+    string account_holder[NUMBER_OF_CUSTOMERS];
+    
 	public:
 		ATM();
 		void loadCash();
 		void showCustomerDetails();
 		void showAtmOperations();
-
+        void get_customers();
 };
 int ATM::transaction_number=0;
 
@@ -19,6 +22,13 @@ ATM::ATM()
 	// denominations[0] stores the number of Rs.2000 notes. denominations[1] stores the number of Rs.500 notes. denominations[2] stores the number of Rs.100 notes
 	for(int i=0;i<3;i++)
 		denominations[i]=0;
+	for(int i=0;i<NUMBER_OF_CUSTOMERS;i++)
+	{
+		account_number[i]=0;
+		account_holder[i]="";
+		pin_number[i]=0;
+		account_balance[i]=0;
+	}
 }
 
 void ATM::loadCash()
@@ -32,7 +42,7 @@ void ATM::loadCash()
 
 	fstream file;
 	file.open("ATM_details.txt");
-	string denomination,value;
+	string denomination,denom_2000,denom_500,denom_100;
 	if(!file)
 		cout<<"Error in file opening!";
 	else
@@ -52,21 +62,17 @@ void ATM::loadCash()
 		else
 		{
 			file.seekg(0);
-			int position=0;
-			
-			file>>denomination;		file>>value;		file.seekg(position);
-			denominations[0] = (stoi(value)+denominations[0]);
-			file<<denomination<<" "<<denominations[0]<<endl;
-			position = file.tellg();
-			
-			file>>denomination;		file>>value;		file.seekg(position);
-			denominations[1] = (stoi(value)+denominations[1]);
-			file<<denomination<<" "<<denominations[1]<<endl;
-			position = file.tellg();
-
-			file>>denomination;		file>>value;		file.seekg(position);
-			denominations[2] = (stoi(value)+denominations[2]);
-			file<<denomination<<" "<<denominations[2]<<endl;
+			file>>denomination;		file>>denom_2000;
+			denominations[0] += stoi(denom_2000);
+			file>>denomination;		file>>denom_500;
+			denominations[1] += stoi(denom_500);
+			file>>denomination;		file>>denom_100;
+			denominations[2] += stoi(denom_100);
+			file.clear();
+			file.seekg(0);
+			file<<"2000 "<<denominations[0]<<endl;
+			file<<"500 "<<denominations[1]<<endl;
+			file<<"100 "<<denominations[2]<<endl;
 		}
 		file.close();
 	}	
@@ -81,6 +87,29 @@ void ATM::loadCash()
 	cout<<"---------------------------------------"<<endl;
 	cout<<"|"<<setw(15)<<left<<"100"<<setfill(' ')<<"|"<<setw(10)<<left<<denominations[2]<<setfill(' ')<<"|"<<setw(10)<<left<<(100*denominations[2])<<setfill(' ')<<"|"<<endl;
 	cout<<"---------------------------------------"<<endl;
+}
+
+void ATM::get_customers()
+{
+    fstream file;
+    file.open("Customer_details.txt",ios::in);
+    string acc_no, acc_holder, pin_no, acc_balance;
+	int i=0;
+    while(file)
+    {
+        file >> acc_no;
+        if(file.eof())
+            break;
+        file >> acc_holder;
+        file >> pin_no;
+        file >> acc_balance;
+
+        account_number[i] = stoi(acc_no);
+        account_holder[i] = acc_holder;
+        pin_number[i] = stoi(pin_no);
+        account_balance[i] = stoi(acc_balance);
+		i++;
+    }
 }
 
 void ATM::showCustomerDetails()
@@ -117,7 +146,7 @@ void ATM::showCustomerDetails()
 
 void ATM::showAtmOperations()
 {
-	int acc_num,pin_num,choice,sender_file_pos=0,check=0;
+	int acc_num,pin_num,choice,check=0;
 	bool flag=false;
 	string sender_acc_no,sender_acc_holder,sender_pin,sender_acc_balance;
 
@@ -135,7 +164,6 @@ void ATM::showAtmOperations()
 		// while loop is to check whether the account number is present in the Customer_details file
 		while(file_sender)
 		{
-			sender_file_pos = file_sender.tellg();
 			file_sender>>sender_acc_no;
 			if(file_sender.eof())
 				break;
@@ -148,6 +176,7 @@ void ATM::showAtmOperations()
 				flag = true; break;
 			}
 		}
+        file_sender.close();
 		if(flag)
 		{
 			cout<<"\nEnter 1. Check Balance   2. Withdraw money   3. Transfer money   4. Check ATM Balance   5. Mini Statement"<<endl;
@@ -159,9 +188,10 @@ void ATM::showAtmOperations()
 					break;
 				}
 				case 2: {
-					int amount, pin_no;
+					int amount, pin_no, Amount;
 					cout<<"Enter the amount to be withdrawn: ";
 					cin>>amount;
+					Amount = amount;
 					// if the amount to be withdrawn is greater than 10000 or lesser than 100 then alert message is shown
 					if(amount<100 || amount>10000)
 						cout<<"Max withdrawal limit for a single transaction is Rs.10,000 and minimum is Rs.100!!!"<<endl;
@@ -273,12 +303,15 @@ void ATM::showAtmOperations()
 							file_withdraw <<"100 "<<(denominations[2]-denom_100)<<endl;
 							file_withdraw.close();
 							// below statements modify the changes in denomination in the Customer_details file
-							file_sender.seekg(sender_file_pos);
-							file_sender>>sender_acc_no;
-							file_sender>>sender_acc_holder;
-							file_sender>>sender_pin;
-							file_sender<<" "<<(stoi(sender_acc_balance)-amount);
-							file_sender.close();
+                            fstream file_new;
+                            file_new.open("Customer_details.txt",ios::out);
+                            for(int x=0;x<NUMBER_OF_CUSTOMERS;x++)
+                            {
+								if(account_number[x]==stoi(sender_acc_no))
+                                    account_balance[x] = stoi(sender_acc_balance)-Amount;
+                                file_new << account_number[x]<<" "<<account_holder[x]<<" "<<pin_number[x]<<" "<<account_balance[x]<<endl;
+                            }
+							file_new.close();
 
 							fstream file_thread_sender;
 
@@ -300,16 +333,16 @@ void ATM::showAtmOperations()
 				}
 				case 3: {
 					fstream file_thread_sender, file_thread_receiver;
-					int amount;
+					int amount, Amount;
 					cout<<"Enter the amount to be transferred: ";
 					cin>>amount;
+					Amount = amount;
 					if(amount<1000 || amount>10000)
 						cout<<"Max transfer limit per transaction cannot exceed Rs.10,000 and should be more than Rs.1000!!!"<<endl;
 					else
 					{
 						file_thread_sender.open((sender_acc_no+"_transactions.txt").c_str(),ios::app);
 
-						int receiver_file_pos=0;
 						string receiver_acc_num, receiver_acc_no, receiver_acc_holder, receiver_pin, receiver_acc_balance;
 						fstream file_receiver;
 
@@ -325,7 +358,6 @@ void ATM::showAtmOperations()
 							// Below while loop is used to check whether the entered receiver account number is in the Customer_details file
 							while(file_receiver)
 							{
-								receiver_file_pos = file_receiver.tellg();
 								file_receiver>>receiver_acc_no;
 								if(file_receiver.eof())
 									break;
@@ -344,21 +376,19 @@ void ATM::showAtmOperations()
 									cout<<"Sender Account Number - "<<sender_acc_no<<" don't have sufficient money to transfer"<<endl;
 								else
 								{
-									file_sender.seekg(sender_file_pos);
-									file_receiver.seekg(receiver_file_pos);
-
 									transaction_number++;
-									// first 3 lines read the corresponding data and 4th line is used to replace the balance money of sender
-									file_sender >> sender_acc_no;
-									file_sender >> sender_acc_holder;
-									file_sender >> sender_pin;
-									file_sender << " " << (stoi(sender_acc_balance) - amount);
-									// first 3 lines read the corresponding data and 4th line is used to replace the balance money of receiver
-									file_receiver >> receiver_acc_no;
-									file_receiver >> receiver_acc_holder;
-									file_receiver >> receiver_pin;
-									file_receiver << " " << (stoi(receiver_acc_balance) + amount);
-
+                                    fstream file_new;
+                                    file_new.open("Customer_details.txt",ios::out);
+                                    for(int x=0;x<NUMBER_OF_CUSTOMERS;x++)
+                                    {
+                                        if(account_number[x]==stoi(sender_acc_no))
+                                            account_balance[x] = stoi(sender_acc_balance)-Amount;
+                                        if(account_number[x]==stoi(receiver_acc_no))
+                                            account_balance[x] = stoi(receiver_acc_balance)+Amount;
+                                        file_new << account_number[x]<<" "<<account_holder[x]<<" "<<pin_number[x]<<" "<<account_balance[x]<<endl;
+                                    }
+									file_new.close();
+									
 									// below lines are used to write the description using asynchronous thread with a delay of 5 seconds
 									future<void> thread_sender = async(launch::async,[&](){
 										file_thread_sender << transaction_number <<"-"<< "Transfer to "<< receiver_acc_no<<"-"<<"Debit"<<"-"<< amount<<"-"<<(stoi(sender_acc_balance)-amount)<<endl;
@@ -462,7 +492,8 @@ int main()
 {
 	ATM obj;
 	int choice;
-	cout<<"\t\t\t\t\t\t\t\t\tATM Process Management"<<endl;
+	cout<<"\t\t\t\t\t\t\tATM Process Management"<<endl;
+    obj.get_customers();
 	do
 	{
 		cout<<"\nEnter  1. To load cash   2. To show customer details   3. To show ATM operations   4. Exit"<<endl;
